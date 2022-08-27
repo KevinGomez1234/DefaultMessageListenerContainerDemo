@@ -4,6 +4,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -27,17 +28,17 @@ public class App {
 	}
 
 	@Bean
-	ConnectionFactory tibjmsConnectionFactory() throws JMSException {
+	ConnectionFactory tibjmsConnectionFactory(@Value("${server.url}") String serverUrl, @Value("${user.name}") String userName, @Value("${user.password}") String password) throws JMSException {
 		TibjmsConnectionFactory connectionFactory = new TibjmsConnectionFactory();
-		connectionFactory.setServerUrl("tcp://localhost:7222");
-		connectionFactory.setUserPassword("pass");
-		connectionFactory.setUserName("kevin");
+		connectionFactory.setServerUrl(serverUrl);
+		connectionFactory.setUserPassword(userName);
+		connectionFactory.setUserName(password);
 		return connectionFactory;
 	}
 
 	@Bean
-	Destination queue() {
-		return new TibjmsQueue("sender");
+	Destination queue(@Value("${queue.name}") String queueName) {
+		return new TibjmsQueue(queueName);
 	}
 
 	@Bean
