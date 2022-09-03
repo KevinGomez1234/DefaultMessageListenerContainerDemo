@@ -15,8 +15,9 @@ public class MessageListen implements MessageListener {
 		TextMessage msg = (TextMessage) message;
 		String textMessage;
 		try {
+			System.out.println(message.getJMSDestination());
 			textMessage = msg.getText();
-			System.out.println("Consumed: " + textMessage);
+			System.out.println("ConsumedE: " + textMessage);
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

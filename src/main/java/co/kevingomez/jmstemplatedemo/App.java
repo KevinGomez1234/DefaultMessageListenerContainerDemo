@@ -1,9 +1,11 @@
 package co.kevingomez.jmstemplatedemo;
 
 import javax.jms.ConnectionFactory;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,14 +23,16 @@ public class App {
 	}
 
 	@Bean
-	public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory, Destination queue) throws Exception {
+	public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory, @Qualifier("queueTwo") Destination queue)
+			throws Exception {
 		JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 		jmsTemplate.setDefaultDestination(queue);
 		return jmsTemplate;
 	}
 
 	@Bean
-	ConnectionFactory tibjmsConnectionFactory(@Value("${server.url}") String serverUrl, @Value("${user.name}") String userName, @Value("${user.password}") String password) throws JMSException {
+	ConnectionFactory tibjmsConnectionFactory(@Value("${server.url}") String serverUrl,
+			@Value("${user.name}") String userName, @Value("${user.password}") String password) throws JMSException {
 		TibjmsConnectionFactory connectionFactory = new TibjmsConnectionFactory();
 		connectionFactory.setServerUrl(serverUrl);
 		connectionFactory.setUserPassword(userName);
@@ -36,14 +40,29 @@ public class App {
 		return connectionFactory;
 	}
 
-	@Bean
+	@Bean(name = "queueOne")
 	Destination queue(@Value("${queue.name}") String queueName) {
 		return new TibjmsQueue(queueName);
 	}
 
-	@Bean
+	@Bean(name = "queueTwo")
+	Destination queueTwo(@Value("${queue.name2}") String queueName) {
+		return new TibjmsQueue(queueName);
+	}
+
+	@Bean(name = "dmlc")
 	DefaultMessageListenerContainer defaultMessageListenerContainer(ConnectionFactory connectionFactory,
-			Destination queue, MessageListen listen) {
+			@Qualifier("queueOne") Destination queue, MessageListen listen) {
+		DefaultMessageListenerContainer dmlc = new DefaultMessageListenerContainer();
+		dmlc.setConnectionFactory(connectionFactory);
+		dmlc.setDestination(queue);
+		dmlc.setMessageListener(listen);
+		return dmlc;
+	}
+
+	@Bean(name = "dmlc2")
+	DefaultMessageListenerContainer defaultMessageListenerContainerTwo(ConnectionFactory connectionFactory,
+			@Qualifier("queueTwo") Destination queue, MessageListen listen) {
 		DefaultMessageListenerContainer dmlc = new DefaultMessageListenerContainer();
 		dmlc.setConnectionFactory(connectionFactory);
 		dmlc.setDestination(queue);

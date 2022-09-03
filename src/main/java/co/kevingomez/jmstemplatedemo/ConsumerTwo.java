@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.stereotype.Component;
 @Component
-public class Consumer {
-	public Consumer(@Qualifier("dmlc")DefaultMessageListenerContainer dmlc) {
-		System.out.println("ConsumerOne");
-		dmlc.start();
+public class ConsumerTwo {
+	public ConsumerTwo(@Qualifier("dmlc2")DefaultMessageListenerContainer dmlc2) {
+		System.out.println("ConsumerTwo");
+		dmlc2.start();
 	}
 
 }
